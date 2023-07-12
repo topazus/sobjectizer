@@ -16,6 +16,7 @@ if(NOT SOBJECTIZER_INSTALL)
 	set(SOBJECTIZER_INSTALL ${SOBJECTIZER_MASTER_PROJECT})
 endif()
 
+include(GNUInstallDirs)
 include(cmake/target.cmake)
 
 project(sobjectizer VERSION ${SO_5_VERSION} LANGUAGES CXX)
@@ -68,7 +69,7 @@ set(SO_5_SRC exception.cpp
 	impl/mt_env_infrastructure.cpp
 	impl/simple_mtsafe_st_env_infrastructure.cpp
 	impl/simple_not_mtsafe_st_env_infrastructure.cpp
-	
+
 	stats/repository.cpp
 	stats/std_names.cpp
 
@@ -76,7 +77,7 @@ set(SO_5_SRC exception.cpp
 	stats/impl/ds_agent_core_stats.cpp
 	stats/impl/ds_mbox_core_stats.cpp
 	stats/impl/ds_timer_thread_stats.cpp
-	
+
 	disp/abstract_work_thread.cpp
 	disp/mpsc_queue_traits/pub.cpp
 	disp/mpmc_queue_traits/pub.cpp
@@ -166,14 +167,14 @@ if(SOBJECTIZER_BUILD_STATIC)
 endif()
 
 if(SOBJECTIZER_INSTALL)
-	set(SO_5_CMAKE_FILES_DEST "lib/cmake/sobjectizer")
+	set(SO_5_CMAKE_FILES_DEST "${CMAKE_INSTALL_LIBDIR}/cmake/sobjectizer")
 
 	install(
 		TARGETS ${SO_5_TARGETS_TO_INSTALL}
 		EXPORT SO_5_ALL_TARGETS
-		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib
-		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 	)
 	install(
 		EXPORT SO_5_ALL_TARGETS
@@ -184,7 +185,7 @@ if(SOBJECTIZER_INSTALL)
 
 	if(SOBJECTIZER_BUILD_SHARED)
 		foreach(__extLibrary ${SO_5_EXT_LIBS})
-			install(FILES ${__extLibrary} DESTINATION lib)
+			install(FILES ${__extLibrary} DESTINATION ${CMAKE_INSTALL_LIBDIR})
 		endforeach()
 	endif()
 
@@ -194,7 +195,7 @@ if(SOBJECTIZER_INSTALL)
 		# Since v.5.7.2.3 install even files from impl subfolders
 		# because it could be necessary for projects like so5extra.
 		get_filename_component( DIR ${HEADER_FILE} PATH )
-		install( FILES ${HEADER_FILE} DESTINATION include/so_5/${DIR} )
+		install( FILES ${HEADER_FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/so_5/${DIR} )
 	endforeach()
 
 	set(SO_5_CONFIG_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/sobjectizer-config-version.cmake")
@@ -204,7 +205,7 @@ if(SOBJECTIZER_INSTALL)
 	write_basic_package_version_file(
 		${SO_5_CONFIG_VERSION_FILE}
 		VERSION ${SO_5_VERSION}
-		COMPATIBILITY ExactVersion 
+		COMPATIBILITY ExactVersion
 	)
 	configure_package_config_file(
 		"cmake/sobjectizer-config.cmake.in"
